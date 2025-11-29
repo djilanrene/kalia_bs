@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kalia Beauty Studio - Salon de beauté premium à Lomé. Coiffure, Maquillage, Soins esthétiques.">
+    <title>Kalia Beauty Studio | Révélez votre éclat</title>
+
+    <!-- 1. RESSOURCES EXTERNES (Google Fonts uniquement, comme spécifié dans le DAT) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* ====================================================================
+           2. DESIGN SYSTEM (Implémentation des Tokens CSS)
+           ==================================================================== */
+        :root {
+            /* Palette de Couleurs (ADR-Design-01) */
+            --primary: #c49378;
+            --primary-dark: #a8765d;
+            --primary-light: #e6d2c6;
+            --text-heading: #111111;
+            --text-body: #444444;
+            --text-muted: #757575;
+            --bg-white: #ffffff;
+            --bg-offwhite: #f9f9f9;
+            --border-default: #e0e0e0;
+            --semantic-success: #2e7d32;
+            --semantic-error: #c62828;
+
+            /* Typographie (ADR-Design-02) */
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+
+            /* Espacements (8pt Grid System) */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-xxl: 64px;
+
+            /* Layout */
+            --container-width: 1200px;
+            --header-height: 80px;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            
+            /* Transitions & Ombres */
+            --transition: all 0.3s ease-in-out;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        /* RESET & BASE */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; font-size: 16px; }
+        
+        body {
+            font-family: var(--font-body);
+            color: var(--text-body);
+            background-color: var(--bg-white);
+            line-height: 1.6;
+            padding-top: var(--header-height); /* Pour la navbar fixe */
+        }
+
+        /* TYPOGRAPHIE */
+        h1, h2, h3, h4 {
+            font-family: var(--font-heading);
+            color: var(--text-heading);
+            line-height: 1.2;
+            margin-bottom: var(--space-md);
+        }
+
+        h1 { font-size: 3rem; font-weight: 600; }
+        h2 { font-size: 2.5rem; text-align: center; margin-bottom: var(--space-xl); position: relative; }
+        h2::after {
+            content: ''; display: block; width: 60px; height: 2px;
+            background-color: var(--primary); margin: var(--space-sm) auto 0;
+        }
+        h3 { font-size: 1.5rem; font-weight: 600; }
+        
+        p { margin-bottom: var(--space-md); }
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+        img { max-width: 100%; height: auto; display: block; }
+        ul { list-style: none; }
+
+        /* UTILITAIRES DE LAYOUT */
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 var(--space-lg);
+        }
+        .section { padding: var(--space-xxl) 0; }
+        .bg-alt { background-color: var(--bg-offwhite); }
+        .grid { display: grid; gap: var(--space-lg); }
+        .grid-2 { grid-template-columns: 1fr 1fr; }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* COMPOSANTS UI (Design System) */
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-outline {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: #fff;
+        }
+
+        .card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+            transform: translateY(-4px);
+        }
+
+        /* NAVIGATION (Sticky Header) */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            height: var(--header-height);
+            background-color: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-default);
+            z-index: 1000;
+            display: flex; align-items: center;
+        }
+        .navbar-content {
+            display: flex; justify-content: space-between; align-items: center;
+            width: 100%;
+        }
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-heading);
+        }
+        .logo span { color: var(--primary); }
+
+        .nav-links { display: flex; gap: var(--space-lg); align-items: center; }
+        .nav-links a {
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            position: relative;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px;
+            background: var(--primary); transition: var(--transition);
+        }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+        .mobile-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: var(--text-heading); }
+
+        /* SECTIONS SPÉCIFIQUES */
+        
+        /* Hero */
+        #hero {
+            height: 90vh;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover; background-position: center;
+            color: #fff;
+            margin-top: calc(var(--header-height) * -1); /* Override padding body */
+        }
+        #hero h1 { color: #fff; margin-bottom: var(--space-md); }
+        #hero p { font-size: 1.25rem; max-width: 600px; margin: 0 auto var(--space-xl); opacity: 0.9; }
+
+        /* Features (Value Props) */
+        .features-grid { margin-top: -60px; position: relative; z-index: 10; }
+        .feature-item {
+            background: var(--bg-white); padding: var(--space-lg); text-align: center;
+            box-shadow: var(--shadow-md); border-radius: var(--radius-sm);
+        }
+        .feature-icon { font-size: 2rem; color: var(--primary); margin-bottom: var(--space-sm); }
+
+        /* Services Listing */
+        .service-img { height: 220px; object-fit: cover; width: 100%; }
+        .service-content { padding: var(--space-lg); }
+        .service-price { color: var(--primary); font-weight: 600; margin-bottom: var(--space-sm); }
+        
+        /* Service Detail (Dynamic) */
+        .detail-wrapper { align-items: start; gap: var(--space-xl); }
+        .detail-img { width: 100%; height: 400px; object-fit: cover; border-radius: var(--radius-md); }
+        .meta-tag { 
+            display: inline-block; background: var(--bg-offwhite); 
+            padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; 
+            color: var(--text-muted); margin-bottom: var(--space-md);
+        }
+
+        /* Gallery */
+        .gallery-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: var(--space-md);
+        }
+        .gallery-item {
+            aspect-ratio: 1; overflow: hidden; border-radius: var(--radius-sm); cursor: pointer; position: relative;
+        }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .gallery-item:hover img { transform: scale(1.1); }
+
+        /* Contact & Form */
+        .contact-info h4 { margin-bottom: var(--space-xs); color: var(--primary); }
+        .contact-block { margin-bottom: var(--space-lg); }
+        
+        .form-group { margin-bottom: var(--space-md); }
+        .form-label { display: block; margin-bottom: var(--space-xs); font-size: 0.9rem; font-weight: 500; }
+        .form-control {
+            width: 100%; padding: 12px; border: 1px solid var(--border-default);
+            background: var(--bg-offwhite); border-radius: var(--radius-sm);
+            font-family: inherit; transition: var(--transition);
+        }
+        .form-control:focus { outline: none; border-color: var(--primary); background: var(--bg-white); }
+
+        /* Footer */
+        footer { background: var(--text-heading); color: #fff; padding: var(--space-xl) 0; text-align: center; }
+        .footer-links a { margin: 0 var(--space-sm); color: #aaa; font-size: 0.9rem; }
+        .footer-links a:hover { color: var(--primary); }
+
+        /* Lightbox & Modal */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 2000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .overlay.active { opacity: 1; pointer-events: all; }
+        .modal-box {
+            background: #fff; padding: var(--space-xl); border-radius: var(--radius-md);
+            max-width: 500px; width: 90%; text-align: center;
+        }
+        .lightbox-img { max-width: 90%; max-height: 90vh; border-radius: var(--radius-sm); }
+
+        /* RESPONSIVE (Mobile First approach adapted) */
+        @media (max-width: 768px) {
+            :root { --header-height: 70px; }
+            h1 { font-size: 2.2rem; }
+            h2 { font-size: 1.8rem; }
+            
+            .grid-2 { grid-template-columns: 1fr; }
+            .navbar .btn { display: none; } /* Hide CTA on mobile nav bar */
+            .mobile-toggle { display: block; }
+            
+            .nav-links {
+                position: absolute; top: var(--header-height); left: 0; width: 100%;
+                background: #fff; flex-direction: column; padding: var(--space-xl);
+                box-shadow: var(--shadow-md); transform: translateY(-150%);
+                transition: transform 0.3s;
+            }
+            .nav-links.open { transform: translateY(0); }
+            
+            .features-grid { margin-top: var(--space-lg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="navbar">
+        <div class="container navbar-content">
+            <a href="#" onclick="app.router('home')" class="logo">Kalia <span>.</span></a>
+            <div class="mobile-toggle" onclick="app.toggleMenu()">☰</div>
+            <nav>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#" onclick="app.router('home')" data-target="home">Accueil</a></li>
+                    <li><a href="#" onclick="app.router('services')" data-target="services">Prestations</a></li>
+                    <li><a href="#" onclick="app.router('gallery')" data-target="gallery">Galerie</a></li>
+                    <li><a href="#" onclick="app.router('about')" data-target="about">Le Salon</a></li>
+                    <li><a href="#" onclick="app.router('contact')" data-target="contact">Contact</a></li>
+                </ul>
+            </nav>
+            <button class="btn btn-primary" onclick="app.router('contact')" style="margin-left: var(--space-md);">Prendre RDV</button>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <!-- ================= SECTION: HOME ================= -->
+        <section id="home" class="view fade-in">
+            <div id="hero">
+                <div class="container">
+                    <h1>Révélez votre éclat naturel</h1>
+                    <p>L'alliance de l'expertise technique et du bien-être absolu au cœur de Lomé.</p>
+                    <button class="btn btn-primary" onclick="app.router('services')">Découvrir nos soins</button>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="grid grid-3 features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">✦</div>
+                        <h3>Expertise</h3>
+                        <p>Des techniques maîtrisées par nos artistes diplômés.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">♥</div>
+                        <h3>Hygiène</h3>
+                        <p>Des protocoles de stérilisation stricts pour votre sécurité.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">✿</div>
+                        <h3>Premium</h3>
+                        <p>Utilisation exclusive de produits de marques reconnues.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section bg-alt">
+                <div class="container">
+                    <h2>Nos Coups de Cœur</h2>
+                    <div class="grid grid-3" id="featured-services">
+                        <!-- Injecté par JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION: SERVICES (Listing) ================= -->
+        <section id="services" class="view section hidden fade-in">
+            <div class="container">
+                <h2>Nos Prestations</h2>
+                <p style="text-align: center; max-width: 600px; margin: 0 auto 3rem;">
+                    Découvrez notre carte de soins conçue pour sublimer chaque aspect de votre beauté.
+                </p>
+                <!-- Filtres Catégories (Optionnel, simplifié ici) -->
+                <div class="grid grid-3" id="services-list">
+                    <!-- Injecté par JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION: SERVICE DETAIL (Dynamic) ================= -->
+        <section id="service-detail" class="view section hidden fade-in">
+            <div class="container">
+                <button class="btn btn-outline" onclick="app.router('services')" style="margin-bottom: var(--space-lg);">← Retour</button>
+                <div id="detail-content" class="grid grid-2 detail-wrapper">
+                    <!-- Injecté par JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION: GALLERY ================= -->
+        <section id="gallery" class="view section hidden fade-in">
+            <div class="container">
+                <h2>Notre Portfolio</h2>
+                <div class="gallery-grid" id="gallery-container">
+                    <!-- Injecté par JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION: ABOUT ================= -->
+        <section id="about" class="view section hidden fade-in bg-alt">
+            <div class="container">
+                <div class="grid grid-2" style="align-items: center;">
+                    <div>
+                        <img src="https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=800&q=80" alt="Fondatrice" style="border-radius: var(--radius-md);">
+                    </div>
+                    <div>
+                        <span class="meta-tag" style="color: var(--primary);">Notre Histoire</span>
+                        <h2>L'Excellence Kalia</h2>
+                        <p>Fondé en 2020, Kalia Beauty Studio est né d'une vision simple : la beauté ne doit pas être un masque, mais une révélation.</p>
+                        <p>"Je voulais créer un espace à Lomé où le temps s'arrête. Un lieu où chaque femme peut se reconnecter avec elle-même tout en bénéficiant des standards internationaux."</p>
+                        <p><strong>- La Fondatrice</strong></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION: CONTACT ================= -->
+        <section id="contact" class="view section hidden fade-in">
+            <div class="container">
+                <h2>Contactez-nous</h2>
+                <div class="grid grid-2">
+                    <!-- Infos -->
+                    <div>
+                        <div class="contact-block">
+                            <h3>Rendez-nous visite</h3>
+                            <p>128 Rue de la Beauté<br>Quartier Résidentiel, Lomé</p>
+                        </div>
+                        <div class="contact-block">
+                            <h3>Horaires</h3>
+                            <p>Lun - Sam : 09h00 - 19h00<br>Dimanche : Fermé</p>
+                        </div>
+                        <div class="contact-block">
+                            <h3>Contact</h3>
+                            <p>Tél : +228 90 00 00 00<br>Email : hello@kaliastudio.com</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Formulaire -->
+                    <div class="card" style="padding: var(--space-xl); border: none; box-shadow: var(--shadow-lg);">
+                        <form id="bookingForm" onsubmit="app.handleForm(event)">
+                            <div class="form-group">
+                                <label class="form-label">Nom complet</label>
+                                <input type="text" class="form-control" required placeholder="Votre nom">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Téléphone</label>
+                                <input type="tel" class="form-control" required placeholder="+228...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Prestation souhaitée</label>
+                                <select class="form-control" id="contact-service-select">
+                                    <option value="">Choisir un soin...</option>
+                                    <!-- Rempli par JS -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Message (Optionnel)</label>
+                                <textarea class="form-control" rows="4" placeholder="Préférences horaires, questions..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Envoyer la demande</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="logo" style="color: #fff; margin-bottom: var(--space-md);">Kalia <span>.</span></div>
+            <div class="footer-links">
+                <a href="#" onclick="app.router('services')">Services</a>
+                <a href="#" onclick="app.router('gallery')">Galerie</a>
+                <a href="#" onclick="app.router('contact')">Contact</a>
+            </div>
+            <p style="margin-top: var(--space-lg); font-size: 0.85rem; color: #777;">&copy; 2025 Kalia Beauty Studio. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <!-- MODAL SUCCESS -->
+    <div id="modal-success" class="overlay">
+        <div class="modal-box fade-in">
+            <div style="font-size: 3rem; color: var(--semantic-success); margin-bottom: var(--space-md);">✓</div>
+            <h3>Demande Reçue !</h3>
+            <p>Merci pour votre confiance. Notre équipe va vous recontacter sous 24h pour confirmer le créneau.</p>
+            <button class="btn btn-primary" onclick="document.getElementById('modal-success').classList.remove('active')">Fermer</button>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX -->
+    <div id="lightbox" class="overlay" onclick="this.classList.remove('active')">
+        <img id="lightbox-img" class="lightbox-img fade-in" src="" alt="Zoom">
+    </div>
+
+    <!-- 3. LOGIQUE JAVASCRIPT (SPA ENGINE) -->
+    <script>
+        const app = {
+            // --- DATA (Simulant le CMS Sanity) ---
+            services: [
+                {
+                    id: 1,
+                    title: "Coupe & Styling Signature",
+                    price: "Dès 65€", // Adaptable en FCFA
+                    duration: "1h 15min",
+                    short: "Une coupe sur-mesure adaptée à la morphologie de votre visage.",
+                    desc: "Notre service signature commence par une consultation approfondie pour comprendre votre style de vie. Le service comprend : shampoing relaxant, soin hydratant, coupe précise et brushing longue tenue.",
+                    img: "https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&w=600&q=80"
+                },
+                {
+                    id: 2,
+                    title: "Balayage Lumière",
+                    price: "Dès 140€",
+                    duration: "2h 30min",
+                    short: "Des reflets naturels pour illuminer votre chevelure sans effet racine.",
+                    desc: "Technique du 'painting' à main levée pour créer des nuances subtiles et fondues. Idéal pour apporter de la profondeur. Comprend la patine (gloss) et le soin post-coloration.",
+                    img: "https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&w=600&q=80"
+                },
+                {
+                    id: 3,
+                    title: "Soin Hydrafacial",
+                    price: "120€",
+                    duration: "45min",
+                    short: "Nettoyage profond et hydratation intense pour une peau neuve.",
+                    desc: "Technologie brevetée qui nettoie, extrait les impuretés et hydrate la peau grâce à des sérums exclusifs. Résultat immédiat : grain de peau affiné, teint éclatant.",
+                    img: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=600&q=80"
+                },
+                {
+                    id: 4,
+                    title: "Maquillage Soirée",
+                    price: "80€",
+                    duration: "1h",
+                    short: "Un look sophistiqué pour vos moments les plus précieux.",
+                    desc: "Mise en beauté complète par nos make-up artists. Teint parfait, travail du regard et des lèvres selon vos envies (naturel ou sophistiqué). Faux-cils inclus.",
+                    img: "https://images.unsplash.com/photo-1487412947132-26c5c1b68a62?auto=format&fit=crop&w=600&q=80"
+                },
+                {
+                    id: 5,
+                    title: "Manucure Russe",
+                    price: "55€",
+                    duration: "1h 15min",
+                    short: "La perfection de l'ongle avec un nettoyage cuticules haute précision.",
+                    desc: "Travail précis des cuticules à la ponceuse pour une application du vernis 'sous cuticule'. Retarde visuellement la repousse et offre un contour net.",
+                    img: "https://images.unsplash.com/photo-1632515904068-d0107e324c4e?auto=format&fit=crop&w=600&q=80"
+                }
+            ],
+
+            gallery: [
+                "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=400",
+                "https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=400",
+                "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?w=400",
+                "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=400",
+                "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=400",
+                "https://images.unsplash.com/photo-1629425733761-caae3b5f2e50?w=400"
+            ],
+
+            // --- INIT ---
+            init: function() {
+                this.renderServices();
+                this.renderGallery();
+                this.populateFormSelect();
+                
+                // Event Listener pour les liens internes
+                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                    anchor.addEventListener('click', function (e) {
+                        e.preventDefault();
+                    });
+                });
+            },
+
+            // --- ROUTER LOGIC ---
+            router: function(viewName) {
+                // 1. Close mobile menu
+                document.getElementById('navLinks').classList.remove('open');
+                window.scrollTo(0, 0);
+
+                // 2. Hide all views
+                document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
+
+                // 3. Show target view
+                const target = document.getElementById(viewName);
+                if(target) target.classList.remove('hidden');
+
+                // 4. Update Nav Active State
+                document.querySelectorAll('.nav-links a').forEach(el => {
+                    el.classList.remove('active');
+                    if(el.dataset.target === viewName) el.classList.add('active');
+                });
+            },
+
+            toggleMenu: function() {
+                document.getElementById('navLinks').classList.toggle('open');
+            },
+
+            // --- RENDER FUNCTIONS ---
+            renderServices: function() {
+                const listContainer = document.getElementById('services-list');
+                const featuredContainer = document.getElementById('featured-services');
+                
+                let listHtml = '';
+                let featuredHtml = '';
+
+                this.services.forEach((s, index) => {
+                    const card = `
+                        <div class="card">
+                            <img src="${s.img}" alt="${s.title}" class="service-img">
+                            <div class="service-content">
+                                <h3>${s.title}</h3>
+                                <div class="service-price">${s.price}</div>
+                                <p>${s.short}</p>
+                                <button class="btn btn-outline" onclick="app.showDetail(${s.id})">Voir le détail</button>
+                            </div>
+                        </div>
+                    `;
+                    listHtml += card;
+                    if(index < 3) featuredHtml += card;
+                });
+
+                listContainer.innerHTML = listHtml;
+                featuredContainer.innerHTML = featuredHtml;
+            },
+
+            showDetail: function(id) {
+                const s = this.services.find(item => item.id === id);
+                if(!s) return;
+
+                const content = document.getElementById('detail-content');
+                content.innerHTML = `
+                    <img src="${s.img}" alt="${s.title}" class="detail-img">
+                    <div>
+                        <span class="meta-tag">Durée : ${s.duration}</span>
+                        <h1>${s.title}</h1>
+                        <h2 style="text-align:left; margin-bottom: 2rem; color: var(--primary);">${s.price}</h2>
+                        <p style="font-size: 1.1rem; color: #333;">${s.desc}</p>
+                        <div style="margin-top: 3rem;">
+                            <button class="btn btn-primary" onclick="app.router('contact'); app.prefillForm('${s.title}')">Réserver ce soin</button>
+                        </div>
+                    </div>
+                `;
+                this.router('service-detail');
+            },
+
+            renderGallery: function() {
+                const container = document.getElementById('gallery-container');
+                container.innerHTML = this.gallery.map(url => 
+                    `<div class="gallery-item" onclick="app.openLightbox('${url}')">
+                        <img src="${url}" alt="Kalia Gallery">
+                    </div>`
+                ).join('');
+            },
+
+            // --- INTERACTIONS ---
+            openLightbox: function(url) {
+                const lb = document.getElementById('lightbox');
+                document.getElementById('lightbox-img').src = url;
+                lb.classList.add('active');
+            },
+
+            populateFormSelect: function() {
+                const select = document.getElementById('contact-service-select');
+                this.services.forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s.title;
+                    option.text = s.title;
+                    select.appendChild(option);
+                });
+            },
+
+            prefillForm: function(serviceName) {
+                const select = document.getElementById('contact-service-select');
+                select.value = serviceName;
+            },
+
+            handleForm: function(e) {
+                e.preventDefault();
+                // Simulation d'envoi API
+                document.getElementById('modal-success').classList.add('active');
+                e.target.reset();
+            }
+        };
+
+        // Start App
+        document.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>
